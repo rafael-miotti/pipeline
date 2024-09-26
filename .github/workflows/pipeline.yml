@@ -1,1 +1,25 @@
+name: Deploy to server
 
+on:
+  workflow_dispatch:
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    
+    steps: 
+      - uses: actions/checkout@v4
+
+      - name: Compacta arquivos
+        run: |
+          tar -cvzf build-files.tar.gz index.html
+
+      - name: Copia arquivo para o server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: 22
+          key: ${{ secrets.SSH_KEY }}
+          source: "build-files.tar.gz"
+          target: /tmp
